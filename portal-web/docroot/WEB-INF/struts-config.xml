@@ -213,17 +213,9 @@
 
 		<!-- Dockbar -->
 
-		<action path="/dockbar/add_content_redirect" forward="portlet.dockbar.add_content_redirect" />
-
-		<action path="/dockbar/add_panel" forward="portlet.dockbar.add_panel" />
-
-		<action path="/dockbar/edit_layout_panel" forward="portlet.dockbar.edit_layout_panel" />
-
 		<action path="/dockbar/edit_layouts" type="com.liferay.portlet.dockbar.action.EditLayoutsAction">
 			<forward name="portlet.dockbar.view" path="portlet.dockbar.view" />
 		</action>
-
-		<action path="/dockbar/preview_panel" forward="portlet.dockbar.preview_panel" />
 
 		<action path="/dockbar/view" type="com.liferay.portlet.dockbar.action.ViewAction">
 			<forward name="portlet.dockbar.view" path="portlet.dockbar.view" />
@@ -303,11 +295,6 @@
 			<forward name="portlet.message_boards.error" path="portlet.message_boards.error" />
 		</action>
 
-		<action path="/message_boards/edit_discussion" type="com.liferay.portlet.messageboards.action.EditDiscussionAction">
-			<forward name="portlet.message_boards.edit_discussion" path="portlet.message_boards.edit_discussion" />
-			<forward name="portlet.message_boards.error" path="portlet.message_boards.error" />
-		</action>
-
 		<action path="/message_boards/edit_message" type="com.liferay.portlet.messageboards.action.EditMessageAction">
 			<forward name="portlet.message_boards.edit_message" path="portlet.message_boards.edit_message" />
 			<forward name="portlet.message_boards.error" path="portlet.message_boards.error" />
@@ -379,11 +366,6 @@
 
 		<action path="/message_boards_admin/edit_category" type="com.liferay.portlet.messageboards.action.EditCategoryAction">
 			<forward name="portlet.message_boards.edit_category" path="portlet.message_boards.edit_category" />
-			<forward name="portlet.message_boards.error" path="portlet.message_boards.error" />
-		</action>
-
-		<action path="/message_boards_admin/edit_discussion" type="com.liferay.portlet.messageboards.action.EditDiscussionAction">
-			<forward name="portlet.message_boards.edit_discussion" path="portlet.message_boards.edit_discussion" />
 			<forward name="portlet.message_boards.error" path="portlet.message_boards.error" />
 		</action>
 
@@ -594,10 +576,6 @@
 			<forward name="portlet.shopping.error" path="portlet.shopping.error" />
 		</action>
 
-		<action path="/shopping/edit_order_discussion" type="com.liferay.portlet.messageboards.action.EditDiscussionAction">
-			<forward name="portlet.message_boards.error" path="portlet.shopping.error" />
-		</action>
-
 		<action path="/shopping/notify" type="com.liferay.portlet.shopping.action.PayPalNotificationAction" />
 
 		<action path="/shopping/search" forward="portlet.shopping.search" />
@@ -648,10 +626,6 @@
 		<action path="/software_catalog/edit_product_entry" type="com.liferay.portlet.softwarecatalog.action.EditProductEntryAction">
 			<forward name="portlet.software_catalog.edit_product_entry" path="portlet.software_catalog.edit_product_entry" />
 			<forward name="portlet.software_catalog.error" path="portlet.software_catalog.error" />
-		</action>
-
-		<action path="/software_catalog/edit_product_entry_discussion" type="com.liferay.portlet.messageboards.action.EditDiscussionAction">
-			<forward name="portlet.message_boards.error" path="portlet.software_catalog.error" />
 		</action>
 
 		<action path="/software_catalog/edit_product_version" type="com.liferay.portlet.softwarecatalog.action.EditProductVersionAction">
