@@ -195,6 +195,7 @@
 					<database-test-run-test database.type="@{database.type}">
 						<test-action>
 							<ant antfile="build-test-@{app.server.type}.xml" inheritAll="false" target="run-selenium-@{app.server.type}">
+								<property name="database.type" value="@{database.type}" />
 								<property name="test.class" value="${axis.variable}" />
 							</ant>
 						</test-action>
