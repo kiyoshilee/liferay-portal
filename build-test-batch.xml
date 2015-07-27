@@ -22,10 +22,15 @@
 	</macrodef>
 
 	<macrodef name="database-test-action">
+		<attribute name="app.server.type" />
 		<attribute name="database.type" />
 		<element name="action" />
 
 		<sequential>
+			<local name="app.server.lib.global.dir" />
+
+			<propertycopy from="app.server.@{app.server.type}.lib.global.dir" name="app.server.lib.global.dir" />
+
 			<local name="database.type" />
 
 			<property name="database.type" value="@{database.type}" />
@@ -47,6 +52,7 @@
 	</macrodef>
 
 	<macrodef name="database-test-run-test">
+		<attribute default="tomcat" name="app.server.type" />
 		<attribute name="database.type" />
 		<attribute name="stop.app.server" default="false" />
 		<element name="test-action" />
