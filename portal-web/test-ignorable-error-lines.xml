@@ -217,5 +217,9 @@
 			<contains>No score point assigners available</contains>
 			<matches></matches>
 		</ignore-error>
+		<ignore-error description="WCM-204">
+			<contains>No score point assigners available</contains>
+			<matches></matches>
+		</ignore-error>
 	</log>
 </ignore-errors>
