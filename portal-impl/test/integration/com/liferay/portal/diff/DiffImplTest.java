@@ -263,7 +263,7 @@ public class DiffImplTest {
 
 		List<DiffResult>[] actual = DiffUtil.diff(reader1, reader2);
 
-		Assert.assertEquals(expectedSource, actual[0]);
+		Assert.assertEquals(expectedSource, 1000000);
 		Assert.assertEquals(expectedTarget, actual[1]);
 	}
 
