@@ -563,6 +563,16 @@ mysql.executable=${mysql.executable}]]></echo>
 	</target>
 
 	<target name="functional-tomcat8-mysql56-jdk7">
+		<echo>############</echo>
+		<echo>${env.JAVA_HOME}</echo>
+
+		<run-functional-test app.server.type="tomcat" database.type="mysql" />
+	</target>
+
+	<target name="functional-tomcat8-mysql56-jdk8">
+		<echo>############</echo>
+		<echo>${env.JAVA_HOME}</echo>
+
 		<run-functional-test app.server.type="tomcat" database.type="mysql" />
 	</target>
 
