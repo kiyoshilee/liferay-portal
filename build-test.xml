@@ -3924,7 +3924,7 @@ go]]></replacevalue>
 			</then>
 		</if>
 
-		<delete dir="/tmp/sprite" />
+		<delete dir="/${app.server.tomcat.work.dir}/Catalina/localhost/ROOT/proxytemp/" />
 	</target>
 
 	<target name="deploy-extra-apps">
@@ -4850,7 +4850,7 @@ setup.wizard.enabled=false
 
 mail.session.jndi.name=
 
-sprite.root.dir=/tmp/sprite
+sprite.root.dir=/${app.server.tomcat.work.dir}/Catalina/localhost/ROOT/proxytemp/hc_316160578
 
 axis.servlet.hosts.allowed=
 
