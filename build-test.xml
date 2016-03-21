@@ -4850,7 +4850,7 @@ setup.wizard.enabled=false
 
 mail.session.jndi.name=
 
-sprite.root.dir=/${app.server.tomcat.work.dir}/Catalina/localhost/ROOT/proxytemp/
+sprite.root.dir=/${app.server.tomcat.work.dir}/Catalina/localhost/ROOT/proxytemp/hc_316160578
 
 axis.servlet.hosts.allowed=
 
