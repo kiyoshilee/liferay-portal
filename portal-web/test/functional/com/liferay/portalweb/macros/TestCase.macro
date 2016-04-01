@@ -11,25 +11,7 @@
 				</not>
 			</or>
 			<then>
-				<if>
-					<and>
-						<equals arg1="${testPortalInstance}" arg2="true" />
-						<not>
-							<condition function="IsTestName" locator1="" value1="${testNameSkipPortalInstance}" />
-						</not>
-					</and>
-					<then>
-						<var method="TestPropsUtil#get('portal.url')" name="portalURL" />
-
-						<var method="StringUtil#replace('${portalURL}', 'http://', '')" name="portalURL" />
-						<var method="StringUtil#replace('${portalURL}', ':8080', '')" name="portalURL" />
-
-						<return name="siteName" value="${portalURL}" />
-					</then>
-					<else>
-						<return name="siteName" value="Liferay" />
-					</else>
-				</if>
+				<return name="siteName" value="Liferay" />
 			</then>
 			<else>
 				<return name="siteName" value="${siteName}" />
@@ -49,7 +31,7 @@
 				</not>
 			</and>
 			<then>
-				<execute macro="SignIn#signInPortalInstanceSetUp" />
+				<execute function="Pause" locator1="1" />
 			</then>
 		</if>
 	</command>
