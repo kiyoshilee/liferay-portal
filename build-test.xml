@@ -5001,8 +5001,6 @@ setup.wizard.enabled=false
 
 mail.session.jndi.name=
 
-sprite.root.dir=/tmp/sprite
-
 axis.servlet.hosts.allowed=
 
 tunnel.servlet.hosts.allowed=</echo>
