@@ -1757,7 +1757,7 @@ this task.
 			<else>
 				<replace file="${app.server.tcserver.bin.dir}/setenv.sh">
 					<replacetoken><![CDATA[JVM_OPTS="-Xmx512M -Xss256K"]]></replacetoken>
-					<replacevalue><![CDATA[JVM_OPTS="-Xmx1024M -Xss512K -XX:MaxPermSize=512m"]]></replacevalue>
+					<replacevalue><![CDATA[JVM_OPTS="-Dfile.encoding=UTF-8 -Xmx1024M -Xss512K -XX:MaxPermSize=512m"]]></replacevalue>
 				</replace>
 			</else>
 		</if>
