@@ -507,7 +507,16 @@ public class LicenseUtil {
 				NetworkInterface.getNetworkInterfaces());
 
 			for (NetworkInterface networkInterface : networkInterfaces) {
-				byte[] hardwareAddress = networkInterface.getHardwareAddress();
+				byte[] hardwareAddress = null;
+
+				try {
+					hardwareAddress = networkInterface.getHardwareAddress();
+				}
+				catch (Exception e) {
+					_log.error(e, e);
+
+					continue;
+				}
 
 				if (ArrayUtil.isEmpty(hardwareAddress)) {
 					continue;
