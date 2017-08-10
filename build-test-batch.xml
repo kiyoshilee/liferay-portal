@@ -477,7 +477,7 @@ app.server.type=@{app.server.type}]]></echo>
 			<if>
 				<contains string="@{app.server.type}" substring="tomcat" />
 				<then>
-					<zip basedir="${project.dir}" destfile="liferay-portal-source.zip" includes="**/*.class" />
+					<zip basedir="${project.dir}" destfile="liferay-portal-source.zip" includes="**/*.class,tmp/**/*.jar" />
 
 					<prepare-liferay-classes if:true="${test.batch.code.coverage}" merged.jar="${project.dir}/jacoco/merged.jar" portal.bundle.dir="bundles" />
 				</then>
