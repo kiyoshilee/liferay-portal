@@ -27,6 +27,9 @@ message.
 
 		<antcall target="clean" />
 		<antcall target="compile" />
+
+		<sleep seconds="600"  />
+
 		<antcall target="deploy" />
 	</target>
 
