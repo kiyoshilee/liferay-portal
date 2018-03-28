@@ -2102,6 +2102,22 @@ app.server.type=@{app.server.type}]]></echo>
 		/>
 	</target>
 
+	<target name="functional-bundle-jboss-db2111-jdk8">
+		<run-functional-test
+			app.server.type="jboss"
+			database.type="db2"
+			test.build.fix.pack.zip.url="${test.build.fix.pack.zip.url}"
+			test.fix.pack.base.url="${test.fix.pack.base.url}"
+			test.license.xml.url="${test.license.xml.url}"
+			test.plugin.zip.url="${test.plugin.zip.url}"
+			test.plugins.war.zip.url="${test.plugins.war.zip.url}"
+			test.portal.bundle.version="${test.portal.bundle.version}"
+			test.portal.bundle.zip.url="${test.portal.bundle.zip.url}"
+			test.portal.lpkg.name="${test.portal.lpkg.name}"
+			test.sql.zip.url="${test.sql.zip.url}"
+		/>
+	</target>
+
 	<target name="functional-bundle-jboss-mysql56-jdk8">
 		<run-functional-test
 			app.server.type="jboss"
@@ -2150,6 +2166,25 @@ app.server.type=@{app.server.type}]]></echo>
 	</target>
 
 	<target name="functional-bundle-tomcat-db2105-jdk8">
+		<set-tomcat-version-number liferay.portal.bundle="${test.portal.bundle.version}" />
+
+		<run-functional-test
+			app.server.type="tomcat"
+			database.type="db2"
+			setup.proxy="false"
+			test.build.fix.pack.zip.url="${test.build.fix.pack.zip.url}"
+			test.fix.pack.base.url="${test.fix.pack.base.url}"
+			test.license.xml.url="${test.license.xml.url}"
+			test.plugin.zip.url="${test.plugin.zip.url}"
+			test.plugins.war.zip.url="${test.plugins.war.zip.url}"
+			test.portal.bundle.version="${test.portal.bundle.version}"
+			test.portal.bundle.zip.url="${test.portal.bundle.zip.url}"
+			test.portal.lpkg.name="${test.portal.lpkg.name}"
+			test.sql.zip.url="${test.sql.zip.url}"
+		/>
+	</target>
+
+	<target name="functional-bundle-tomcat-db2111-jdk8">
 		<set-tomcat-version-number liferay.portal.bundle="${test.portal.bundle.version}" />
 
 		<run-functional-test
@@ -2389,6 +2424,10 @@ app.server.type=@{app.server.type}]]></echo>
 		<run-functional-test app.server.type="jboss" database.type="db2" />
 	</target>
 
+	<target name="functional-jboss70-db2111-jdk8">
+		<run-functional-test app.server.type="jboss" database.type="db2" />
+	</target>
+
 	<target name="functional-smoke-bundle-tomcat-mysql56-jdk8">
 		<antcall target="functional-bundle-tomcat-mysql56-jdk8" />
 	</target>
@@ -2413,7 +2452,7 @@ app.server.type=@{app.server.type}]]></echo>
 		<run-functional-test app.server.type="tcserver" database.type="mysql" database.version="5.7" test.portal.log.assert="false" />
 	</target>
 
-	<target name="functional-smoke-tomcat80-db2105-jdk8">
+	<target name="functional-smoke-tomcat80-db2111-jdk8">
 		<run-functional-test app.server.type="tomcat" database.type="db2" test.portal.log.assert="true" />
 	</target>
 
@@ -2441,7 +2480,7 @@ app.server.type=@{app.server.type}]]></echo>
 		<run-functional-test app.server.type="tomcat" database.type="sybase" test.portal.log.assert="true" />
 	</target>
 
-	<target name="functional-smoke-tomcat90-db2105-jdk8">
+	<target name="functional-smoke-tomcat90-db2111-jdk8">
 		<run-functional-test app.server.type="tomcat" database.type="db2" test.portal.log.assert="true" />
 	</target>
 
@@ -2485,11 +2524,7 @@ app.server.type=@{app.server.type}]]></echo>
 		<run-functional-test app.server.type="wildfly" database.type="mariadb" test.portal.log.assert="true" />
 	</target>
 
-	<target name="functional-smoke-wildfly110-mariadb100-jdk8">
-		<run-functional-test app.server.type="wildfly" database.type="mariadb" test.portal.log.assert="true" />
-	</target>
-
-	<target name="functional-tomcat80-db2105-jdk8">
+	<target name="functional-tomcat80-db2111-jdk8">
 		<run-functional-test app.server.type="tomcat" database.type="db2" />
 	</target>
 
@@ -2525,7 +2560,7 @@ app.server.type=@{app.server.type}]]></echo>
 		<run-functional-test app.server.type="tomcat" database.type="sybase" />
 	</target>
 
-	<target name="functional-tomcat90-db2105-jdk8">
+	<target name="functional-tomcat90-db2111-jdk8">
 		<run-functional-test app.server.type="tomcat" database.type="db2" />
 	</target>
 
@@ -2677,6 +2712,10 @@ app.server.type=@{app.server.type}]]></echo>
 	</target>
 
 	<target name="integration-db2105-jdk8">
+		<run-integration-test database.type="db2" />
+	</target>
+
+	<target name="integration-db2111-jdk8">
 		<run-integration-test database.type="db2" />
 	</target>
 
@@ -2842,6 +2881,10 @@ app.server.type=@{app.server.type}]]></echo>
 	</target>
 
 	<target name="modules-integration-db2105-jdk8">
+		<run-modules-integration-test database.type="db2" />
+	</target>
+
+	<target name="modules-integration-db2111-jdk8">
 		<run-modules-integration-test database.type="db2" />
 	</target>
 
