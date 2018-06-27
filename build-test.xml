@@ -3724,6 +3724,27 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 							</then>
 						</elseif>
 						<else>
+							<echo><![CDATA[========================================================================================]]></echo>
+
+							<execute>
+								date
+							</execute>
+
+							<echo><![CDATA[
+========================================================================================
+<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
+	<and>
+		<not>
+			<http url="http://localhost:${test.app.server.leading.port.number}080/web/guest" />
+		</not>
+		<not>
+			<http url="http://localhost:${test.app.server.leading.port.number}099" />
+		</not>
+	</and>
+</waitfor>
+========================================================================================
+							]]></echo>
+
 							<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
 								<and>
 									<not>
@@ -3734,6 +3755,16 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 									</not>
 								</and>
 							</waitfor>
+
+							<echo><![CDATA[========================================================================================]]></echo>
+							<echo>app.server.stopping.timeout=${app.server.stopping.timeout}</echo>
+							<echo><![CDATA[========================================================================================]]></echo>
+
+							<execute>
+								date
+							</execute>
+
+							<echo><![CDATA[========================================================================================]]></echo>
 
 							<if>
 								<equals arg1="${app.server.type}" arg2="wildfly" />
