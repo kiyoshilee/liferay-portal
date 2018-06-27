@@ -3730,6 +3730,12 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 								date
 							</execute>
 
+							<echo><![CDATA[========================================================================================]]></echo>
+
+							<execute>
+								jps
+							</execute>
+
 							<echo><![CDATA[
 ========================================================================================
 <waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
@@ -3762,6 +3768,12 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 
 							<execute>
 								date
+							</execute>
+
+							<echo><![CDATA[========================================================================================]]></echo>
+
+							<execute>
+								jps
 							</execute>
 
 							<echo><![CDATA[========================================================================================]]></echo>
