@@ -3767,14 +3767,17 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 							<echo><![CDATA[========================================================================================]]></echo>
 
 							<execute>
-								date
-							</execute>
-
-							<echo><![CDATA[========================================================================================]]></echo>
-
-							<execute>
 								jps
 							</execute>
+
+							<if>
+								<http url="http://localhost:${test.app.server.leading.port.number}099" />
+								<then>
+									<execute>
+										kill -TERM $(lsof -i:${test.app.server.leading.port.number}099 -t) || kill -KILL $(lsof -i:${test.app.server.leading.port.number}099 -t)
+									</execute>
+								</then>
+							</if>
 
 							<echo><![CDATA[========================================================================================]]></echo>
 
