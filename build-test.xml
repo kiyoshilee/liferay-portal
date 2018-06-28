@@ -3726,11 +3726,20 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 						<else>
 							<echo><![CDATA[========================================================================================]]></echo>
 
-							<echo><![CDATA[========================================================================================]]></echo>
-
 							<execute>
-								jps
+								<![CDATA[
+									jps > jps_output
+								]]>
 							</execute>
+
+							<local name="jps.output" />
+
+							<loadfile
+								property="jps.output"
+								srcfile="jps_output"
+							/>
+
+							<echo>${jps.output}</echo>
 
 							<echo><![CDATA[
 ========================================================================================
@@ -3763,8 +3772,19 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 							<echo><![CDATA[========================================================================================]]></echo>
 
 							<execute>
-								jps
+								<![CDATA[
+									jps > jps_output
+								]]>
 							</execute>
+
+							<local name="jps.output" />
+
+							<loadfile
+								property="jps.output2"
+								srcfile="jps_output"
+							/>
+
+							<echo>${jps.output2}</echo>
 
 							<if>
 								<http url="http://localhost:${test.app.server.leading.port.number}099" />
