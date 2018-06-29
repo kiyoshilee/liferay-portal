@@ -3694,54 +3694,56 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 					</if>
 				</daemons>
 				<sequential>
-					<if>
-						<equals arg1="@{app.server.bin.dir}" arg2="${app.server.tcat.admin.bin.dir}" />
-						<then>
-							<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
-								<and>
-									<not>
-										<http url="http://localhost:${test.app.server.leading.port.number}180/console" />
-									</not>
-									<not>
-										<http url="http://localhost:${test.app.server.leading.port.number}099" />
-									</not>
-								</and>
-							</waitfor>
-						</then>
-						<elseif>
-							<equals arg1="@{app.server.bin.dir}" arg2="${app.server.tcat.agent.bin.dir}" />
-							<then>
-								<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
-									<and>
-										<not>
-											<http url="http://localhost:${test.app.server.leading.port.number}080" />
-										</not>
-										<not>
-											<http url="http://localhost:${test.app.server.leading.port.number}099" />
-										</not>
-									</and>
-								</waitfor>
-							</then>
-						</elseif>
-						<else>
-							<echo><![CDATA[========================================================================================]]></echo>
+					<trycatch>
+						<try>
+							<if>
+								<equals arg1="@{app.server.bin.dir}" arg2="${app.server.tcat.admin.bin.dir}" />
+								<then>
+									<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
+										<and>
+											<not>
+												<http url="http://localhost:${test.app.server.leading.port.number}180/console" />
+											</not>
+											<not>
+												<http url="http://localhost:${test.app.server.leading.port.number}099" />
+											</not>
+										</and>
+									</waitfor>
+								</then>
+								<elseif>
+									<equals arg1="@{app.server.bin.dir}" arg2="${app.server.tcat.agent.bin.dir}" />
+									<then>
+										<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
+											<and>
+												<not>
+													<http url="http://localhost:${test.app.server.leading.port.number}080" />
+												</not>
+												<not>
+													<http url="http://localhost:${test.app.server.leading.port.number}099" />
+												</not>
+											</and>
+										</waitfor>
+									</then>
+								</elseif>
+								<else>
+									<echo><![CDATA[========================================================================================]]></echo>
 
-							<execute>
-								<![CDATA[
-									jps > jps_output
-								]]>
-							</execute>
+									<execute>
+										<![CDATA[
+											jps > jps_output
+										]]>
+									</execute>
 
-							<local name="jps.output" />
+									<local name="jps.output" />
 
-							<loadfile
-								property="jps.output"
-								srcfile="jps_output"
-							/>
+									<loadfile
+										property="jps.output"
+										srcfile="jps_output"
+									/>
 
-							<echo>${jps.output}</echo>
+									<echo>${jps.output}</echo>
 
-							<echo><![CDATA[
+									<echo><![CDATA[
 ========================================================================================
 <waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
 	<and>
@@ -3754,86 +3756,95 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 	</and>
 </waitfor>
 ========================================================================================
-							]]></echo>
+									]]></echo>
 
-							<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
-								<and>
-									<not>
-										<http url="http://localhost:${test.app.server.leading.port.number}080/web/guest" />
-									</not>
-									<not>
-										<http url="http://localhost:${test.app.server.leading.port.number}099" />
-									</not>
-								</and>
-							</waitfor>
+									<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
+										<and>
+											<not>
+												<http url="http://localhost:${test.app.server.leading.port.number}080/web/guest" />
+											</not>
+											<not>
+												<http url="http://localhost:${test.app.server.leading.port.number}099" />
+											</not>
+										</and>
+									</waitfor>
 
+									<echo><![CDATA[========================================================================================]]></echo>
+									<echo>app.server.stopping.timeout=${app.server.stopping.timeout}</echo>
+									<echo><![CDATA[========================================================================================]]></echo>
+
+									<execute>
+										<![CDATA[
+											jps > jps_output
+										]]>
+									</execute>
+
+									<local name="jps.output" />
+
+									<loadfile
+										property="jps.output2"
+										srcfile="jps_output"
+									/>
+
+									<echo>${jps.output2}</echo>
+									<echo><![CDATA[========================================================================================]]></echo>
+
+									<if>
+										<equals arg1="${app.server.type}" arg2="wildfly" />
+										<then>
+											<retry retrycount="10">
+												<sequential>
+													<execute>
+														<![CDATA[
+															jps > jps_output
+														]]>
+													</execute>
+
+													<trycatch property="shutdown.error">
+														<try>
+															<if>
+																<resourcecontains
+																	resource="jps_output"
+																	substring="jboss-modules.jar"
+																/>
+																<then>
+																	<fail />
+																</then>
+															</if>
+														</try>
+														<catch>
+															<sleep seconds="5" />
+
+															<fail message="Server failed to fully shut down." />
+														</catch>
+													</trycatch>
+												</sequential>
+											</retry>
+
+											<delete file="jps_output" />
+										</then>
+									</if>
+								</else>
+							</if>
+						</try>
+						<catch>
 							<echo><![CDATA[========================================================================================]]></echo>
-							<echo>app.server.stopping.timeout=${app.server.stopping.timeout}</echo>
-							<echo><![CDATA[========================================================================================]]></echo>
-
-							<execute>
-								<![CDATA[
-									jps > jps_output
-								]]>
-							</execute>
-
-							<local name="jps.output" />
-
-							<loadfile
-								property="jps.output2"
-								srcfile="jps_output"
-							/>
-
-							<echo>${jps.output2}</echo>
+							<echo>Server failed to shutdown</echo>
 
 							<if>
-								<http url="http://localhost:${test.app.server.leading.port.number}099" />
+								<or>
+									<http url="http://localhost:${test.app.server.leading.port.number}080/web/guest" />
+									<http url="http://localhost:${test.app.server.leading.port.number}099" />
+								</or>
 								<then>
 									<execute>
-										kill -TERM $(lsof -i:${test.app.server.leading.port.number}099 -t) || kill -KILL $(lsof -i:${test.app.server.leading.port.number}099 -t)
+										kill -KILL $(lsof -i:${test.app.server.leading.port.number}080 -t)
+										kill -KILL $(lsof -i:${test.app.server.leading.port.number}099 -t)
 									</execute>
 								</then>
 							</if>
-
-							<echo><![CDATA[========================================================================================]]></echo>
-
-							<if>
-								<equals arg1="${app.server.type}" arg2="wildfly" />
-								<then>
-									<retry retrycount="10">
-										<sequential>
-											<execute>
-												<![CDATA[
-													jps > jps_output
-												]]>
-											</execute>
-
-											<trycatch property="shutdown.error">
-												<try>
-													<if>
-														<resourcecontains
-															resource="jps_output"
-															substring="jboss-modules.jar"
-														/>
-														<then>
-															<fail />
-														</then>
-													</if>
-												</try>
-												<catch>
-													<sleep seconds="5" />
-
-													<fail message="Server failed to fully shut down." />
-												</catch>
-											</trycatch>
-										</sequential>
-									</retry>
-
-									<delete file="jps_output" />
-								</then>
-							</if>
-						</else>
-					</if>
+						</catch>
+					</trycatch>
 
 					<if>
 						<and>
