@@ -3760,13 +3760,30 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 
 									<echo>Waiting for socket to release</echo>
 
+									<if>
+										<isset property="env.HOSTNAME" />
+										<then>
+											<propertyregex
+												input="${env.HOSTNAME}"
+												override="true"
+												property="server.host"
+												regexp="(.*)\.lax\.liferay\.com"
+												replace="\1"
+											/>
+										</then>
+										<else>
+											<property name="server.host" value="localhost" />
+										</else>
+									</if>
+
+
 									<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
 										<and>
 											<not>
 												<socket port="${test.app.server.leading.port.number}080" server="localhost" />
 											</not>
 											<not>
-												<socket port="${test.app.server.leading.port.number}099" server="localhost" />
+												<socket port="${test.app.server.leading.port.number}099" server="${server.host}" />
 											</not>
 										</and>
 									</waitfor>
@@ -3782,9 +3799,6 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 
 											echo "Process on 8080"
 											lsof -i:8080
-
-											echo "Process on 8099"
-											lsof -i:8099
 										]]>
 									</execute>
 
