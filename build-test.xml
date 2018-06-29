@@ -3763,13 +3763,7 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 									<if>
 										<isset property="env.HOSTNAME" />
 										<then>
-											<propertyregex
-												input="${env.HOSTNAME}"
-												override="true"
-												property="server.host"
-												regexp="(.*)\.lax\.liferay\.com"
-												replace="\1"
-											/>
+											<property name="server.host" value="${env.HOSTNAME}" />
 										</then>
 										<else>
 											<property name="server.host" value="localhost" />
