@@ -3771,6 +3771,8 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 										</and>
 									</waitfor>
 
+									<echo>Socket released</echo>
+
 									<echo><![CDATA[========================================================================================]]></echo>
 									<echo>app.server.stopping.timeout=${app.server.stopping.timeout}</echo>
 									<echo><![CDATA[========================================================================================]]></echo>
@@ -3779,7 +3781,8 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 										<![CDATA[
 											jps > jps_output
 
-											lsof -i:${test.app.server.leading.port.number}099 -t
+											lsof -i:8080 -t
+											lsof -i:8099 -t
 										]]>
 									</execute>
 
