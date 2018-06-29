@@ -3758,6 +3758,8 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 ========================================================================================
 									]]></echo>
 
+									<echo>Waiting for socket to release</echo>
+
 									<waitfor maxwait="5" maxwaitunit="minute" timeoutproperty="app.server.stopping.timeout">
 										<and>
 											<not>
@@ -3776,6 +3778,8 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 									<execute>
 										<![CDATA[
 											jps > jps_output
+
+											lsof -i:${test.app.server.leading.port.number}099 -t
 										]]>
 									</execute>
 
@@ -3833,8 +3837,8 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 
 							<if>
 								<or>
-									<http url="http://localhost:${test.app.server.leading.port.number}080/web/guest" />
-									<http url="http://localhost:${test.app.server.leading.port.number}099" />
+									<socket port="${test.app.server.leading.port.number}080" server="localhost" />
+									<socket port="${test.app.server.leading.port.number}099" server="localhost" />
 								</or>
 								<then>
 									<execute>
