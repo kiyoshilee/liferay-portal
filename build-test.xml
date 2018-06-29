@@ -3772,17 +3772,19 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 									</waitfor>
 
 									<echo>Socket released</echo>
-
-									<echo><![CDATA[========================================================================================]]></echo>
-									<echo>app.server.stopping.timeout=${app.server.stopping.timeout}</echo>
 									<echo><![CDATA[========================================================================================]]></echo>
 
 									<execute>
 										<![CDATA[
 											jps > jps_output
 
-											lsof -i:8080 -t
-											lsof -i:8099 -t
+											netstat | grep "80"
+
+											echo "Process on 8080"
+											lsof -i:8080
+
+											echo "Process on 8099"
+											lsof -i:8099
 										]]>
 									</execute>
 
@@ -3838,18 +3840,48 @@ org.apache.catalina.startup.ClassLoaderFactory.level=INFO]]>
 							<echo><![CDATA[========================================================================================]]></echo>
 							<echo>Server failed to shutdown</echo>
 
+							<execute>
+								<![CDATA[
+									jps > jps_output
+
+									netstat | grep "80"
+								]]>
+							</execute>
+
+							<local name="jps.output" />
+
+							<loadfile
+								property="jps.output2"
+								srcfile="jps_output"
+							/>
+
+							<echo>${jps.output2}</echo>
+							<echo><![CDATA[========================================================================================]]></echo>
+
 							<if>
 								<or>
 									<socket port="${test.app.server.leading.port.number}080" server="localhost" />
 									<socket port="${test.app.server.leading.port.number}099" server="localhost" />
 								</or>
 								<then>
+									<echo>Killing processes</echo>
+
 									<execute>
 										kill -KILL $(lsof -i:${test.app.server.leading.port.number}080 -t)
 										kill -KILL $(lsof -i:${test.app.server.leading.port.number}099 -t)
 									</execute>
 								</then>
 							</if>
+
+							<echo>Killing processes outside of the if block</echo>
+
+							<execute>
+								echo "Killing process on 8080"
+								kill -KILL $(lsof -i:${test.app.server.leading.port.number}080 -t)
+
+								echo "Killing process on 8099"
+								kill -KILL $(lsof -i:${test.app.server.leading.port.number}099 -t)
+							</execute>
 						</catch>
 					</trycatch>
 
