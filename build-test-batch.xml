@@ -5267,6 +5267,14 @@ information. Make sure to commit in all build services results.
 		<get-database-property property.name="database.schema" />
 		<get-database-property property.name="database.username" />
 
+		<length mode="all" property="sybase.length">
+			<fileset dir="/opt/sybase/data" includes="*" />
+		</length>
+
+		<echo>######################################</echo>
+		<echo>${sybase.length}</echo>
+		<echo>######################################</echo>
+
 		<condition else="true" property="rebuild.sybase" value="false">
 			<length length="25000000000" mode="all" when="lt">
 				<fileset dir="/opt/sybase/data" includes="*" />
