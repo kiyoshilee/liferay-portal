@@ -3797,6 +3797,18 @@ plugins.includes=</echo>
 					to="liferay-portal-dependencies-${lp.version}/com.liferay.registry.api.jar"
 				/>
 			</mappedresources>
+			<mappedresources>
+				<fileset
+					dir="tools/sdk/dist"
+					includes="com.liferay.petra.*.jar"
+				>
+					<filename regex="\.(concurrent|executor|function|io|lang|memory|nio|process|reflect|string)-" />
+				</fileset>
+				<regexpmapper
+					from="com\.liferay\.petra\.([^-]+)-([0-9.]+)\.jar"
+					to="liferay-portal-dependencies-${lp.version}/com.liferay.petra.\1.jar"
+				/>
+			</mappedresources>
 			<zipfileset
 				dir="lib/development"
 				includes="hsql.jar"
