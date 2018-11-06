@@ -726,6 +726,14 @@ jdbc.counter.connectionProperties=oracle.jdbc.ReadTimeout=0;oracle.net.CONNECT_T
 				input="${poshi.java.jdk.opts}"
 				override="true"
 				property="poshi.java.jdk.opts"
+				regexp="Xlog:gc"
+				replace="Xloggc"
+			/>
+
+			<propertyregex
+				input="${poshi.java.jdk.opts}"
+				override="true"
+				property="poshi.java.jdk.opts"
 				regexp="PermSize"
 				replace="MetaspaceSize"
 			/>
