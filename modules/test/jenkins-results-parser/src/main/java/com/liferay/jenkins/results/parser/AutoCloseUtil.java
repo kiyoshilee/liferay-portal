@@ -14,6 +14,8 @@
 
 package com.liferay.jenkins.results.parser;
 
+import com.google.common.collect.Lists;
+
 import java.io.IOException;
 
 import java.util.ArrayList;
@@ -33,131 +35,26 @@ public class AutoCloseUtil {
 
 	public static boolean debug = false;
 
-	public static void autoClose(PullRequest pullRequest, Build build)
+	public static boolean autoClose(PullRequest pullRequest, Build build)
 		throws Exception {
-
-		if (pullRequest.isAutoCloseCommentAvailable()) {
-			return;
-		}
-
-		String gitHubReceiverUsername = pullRequest.getOwnerUsername();
-		String gitHubSenderUsername = pullRequest.getSenderUsername();
-
-		if ((gitHubReceiverUsername == null) ||
-			(gitHubSenderUsername == null) ||
-			!_autoCloseReceiverUsernames.contains(gitHubReceiverUsername) ||
-			gitHubReceiverUsername.equals(gitHubSenderUsername)) {
-
-			return;
-		}
-
-		pullRequest.close();
 
 		StringBuilder sb = new StringBuilder();
 
-		sb.append("<h1>The pull request tester is still running.</h1>");
-		sb.append("<p>Please wait until you get the ");
-		sb.append("<i><b>final report</b></i> before running 'ci:retest'.");
-		sb.append("</p><p>See this link to check on the status of your ");
-		sb.append("test:</p>");
-
-		sb.append("<ul><li><a href=\"");
+		sb.append("<a href=\"");
 		sb.append(build.getBuildURL());
 		sb.append("\">");
-		sb.append(build.getJobName());
-		sb.append("</a></li></ul><p>@");
-		sb.append(pullRequest.getSenderUsername());
-		sb.append("</p><hr />");
+		sb.append(build.getBuildURL());
+		sb.append("</li>");
 
-		sb.append("<h1>However, the pull request was closed.</h1>");
-		sb.append("<p>The pull request was closed because the following ");
-		sb.append("critical builds had failed:</p><ul>");
-
-		String buildURL = build.getBuildURL();
-
-		sb.append("<li><a href=\"");
-		sb.append(buildURL);
-		sb.append("\">");
-
-		String jobVariant = build.getJobVariant();
-
-		if ((jobVariant != null) && !jobVariant.isEmpty()) {
-			sb.append(jobVariant);
-		}
-		else {
-			sb.append(build.getJobName());
-		}
-
-		sb.append("</a></li></ul><p>For information as to why we ");
-		sb.append("automatically close out certain pull requests see this ");
-		sb.append("<a href=\"https://in.liferay.com/web/global.");
-		sb.append("engineering/wiki/-/wiki/Quality+Assurance+Main/Test");
-		sb.append("+Batch+Automatic+Close+List\">article</a>.</p><p");
-
-		boolean sourceFormatBuild = build instanceof SourceFormatBuild;
-
-		if (sourceFormatBuild) {
-			sb.append("><strong><em>*");
-		}
-		else {
-			sb.append(" auto-close=\"false\"><strong><em>*This pull will ");
-			sb.append("no longer automatically close if this comment is ");
-			sb.append("available. ");
-		}
-
-		sb.append("If you believe this is a mistake please reopen this ");
-		sb.append("pull by entering the following command as a comment.");
-		sb.append("</em></strong><pre>ci&#58;reopen</pre></p>");
-
-		if (sourceFormatBuild) {
-			sb.append("<strong><em>*The reopened pull request may ");
-			sb.append("be automatically closed again if other critical ");
-			sb.append("batches or tests fail.</em></strong>");
-		}
-
-		sb.append("<hr /><h3>Critical Failure Details:</h3>");
-
-		try {
-			sb.append(Dom4JUtil.format(build.getGitHubMessageElement(), false));
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-
-			throw e;
-		}
-
-		if (!_autoCloseGitHubCommentMentionUsernames.isEmpty()) {
-			sb.append("<div>cc");
-
-			for (String autoCloseGitHubCommentMentionUsername :
-					_autoCloseGitHubCommentMentionUsernames) {
-
-				sb.append(" @");
-				sb.append(autoCloseGitHubCommentMentionUsername);
-			}
-
-			sb.append("</div>");
-		}
-
-		pullRequest.addComment(sb.toString());
+		return _autoClose(
+			pullRequest, build, Lists.newArrayList(sb.toString()));
 	}
 
 	public static boolean autoCloseOnCriticalBatchFailures(
 			PullRequest pullRequest, Build topLevelBuild)
 		throws Exception {
 
-		if (pullRequest.isAutoCloseCommentAvailable()) {
-			return false;
-		}
-
-		String gitHubReceiverUsername = pullRequest.getOwnerUsername();
-		String gitHubSenderUsername = pullRequest.getSenderUsername();
-
-		if ((gitHubReceiverUsername == null) ||
-			(gitHubSenderUsername == null) ||
-			!_autoCloseReceiverUsernames.contains(gitHubReceiverUsername) ||
-			gitHubReceiverUsername.equals(gitHubSenderUsername)) {
-
+		if (!_isAutoClosable(pullRequest)) {
 			return false;
 		}
 
@@ -180,34 +77,14 @@ public class AutoCloseUtil {
 				continue;
 			}
 
-			pullRequest.close();
-
-			StringBuilder sb = new StringBuilder();
-
-			sb.append("<h1>The pull request tester is still running.</h1>");
-			sb.append("<p>Please wait until you get the ");
-			sb.append("<i><b>final report</b></i> before running 'ci:retest'.");
-			sb.append("</p><p>See this link to check on the status of your ");
-			sb.append("test:</p>");
-
-			sb.append("<ul><li><a href=\"");
-			sb.append(topLevelBuild.getBuildURL());
-			sb.append("\">");
-			sb.append(topLevelBuild.getJobName());
-			sb.append("</a></li></ul><p>@");
-			sb.append(gitHubSenderUsername);
-			sb.append("</p><hr />");
-
-			sb.append("<h1>However, the pull request was closed.</h1>");
-			sb.append("<p>The pull request was closed because the following ");
-			sb.append("critical batches had failed:</p><ul>");
-
-			String failureBuildURL = "";
+			List<String> failedDownstreamBuildURLs = new ArrayList<>();
 
 			for (Build failedDownstreamBuild : failedDownstreamBuilds) {
-				failureBuildURL = failedDownstreamBuild.getBuildURL();
+				StringBuilder sb = new StringBuilder();
 
-				sb.append("<li><a href=\"");
+				String failureBuildURL = failedDownstreamBuild.getBuildURL();
+
+				sb.append("<a href=\"");
 				sb.append(failureBuildURL);
 				sb.append("\">");
 
@@ -220,69 +97,13 @@ public class AutoCloseUtil {
 					sb.append(failedDownstreamBuild.getJobName());
 				}
 
-				sb.append("</a></li>");
+				sb.append("</li>");
+
+				failedDownstreamBuildURLs.add(failureBuildURL);
 			}
 
-			sb.append("</ul><p>For information as to why we automatically ");
-			sb.append("close out certain pull requests see this ");
-			sb.append("<a href=\"https://in.liferay.com/web/global.");
-			sb.append("engineering/wiki/-/wiki/Quality+Assurance+Main/Test");
-			sb.append("+Batch+Automatic+Close+List\">article</a>.</p><p");
-
-			boolean sourceFormatBuild =
-				topLevelBuild instanceof SourceFormatBuild;
-
-			if (sourceFormatBuild) {
-				sb.append("><strong><em>*");
-			}
-			else {
-				sb.append(" auto-close=\"false\"><strong><em>*This pull will ");
-				sb.append("no longer automatically close if this comment is ");
-				sb.append("available. ");
-			}
-
-			sb.append("If you believe this is a mistake please reopen this ");
-			sb.append("pull by entering the following command as a comment.");
-			sb.append("</em></strong><pre>ci&#58;reopen</pre></p>");
-
-			if (sourceFormatBuild) {
-				sb.append("<strong><em>*The reopened pull request may ");
-				sb.append("be automatically closed again if other critical ");
-				sb.append("batches or tests fail.</em></strong>");
-			}
-
-			sb.append("<hr /><h3>Critical Failure Details:</h3>");
-
-			for (Build failedDownstreamBuild : failedDownstreamBuilds) {
-				try {
-					sb.append(
-						Dom4JUtil.format(
-							failedDownstreamBuild.getGitHubMessageElement(),
-							false));
-				}
-				catch (Exception e) {
-					e.printStackTrace();
-
-					throw e;
-				}
-			}
-
-			if (!_autoCloseGitHubCommentMentionUsernames.isEmpty()) {
-				sb.append("<div>cc");
-
-				for (String autoCloseGitHubCommentMentionUsername :
-						_autoCloseGitHubCommentMentionUsernames) {
-
-					sb.append(" @");
-					sb.append(autoCloseGitHubCommentMentionUsername);
-				}
-
-				sb.append("</div>");
-			}
-
-			pullRequest.addComment(sb.toString());
-
-			return true;
+			return _autoClose(
+				pullRequest, topLevelBuild, failedDownstreamBuildURLs);
 		}
 
 		return false;
@@ -292,24 +113,10 @@ public class AutoCloseUtil {
 			PullRequest pullRequest, Build topLevelBuild)
 		throws Exception {
 
-		if (pullRequest.isAutoCloseCommentAvailable() ||
-			!isAutoCloseOnCriticalTestFailuresActive(pullRequest)) {
-
+		if (!_isAutoClosable(pullRequest)) {
 			return false;
 		}
 
-		String gitHubReceiverUsername = pullRequest.getOwnerUsername();
-		String gitHubSenderUsername = pullRequest.getSenderUsername();
-
-		if ((gitHubReceiverUsername == null) ||
-			(gitHubSenderUsername == null) ||
-			!_autoCloseReceiverUsernames.contains(gitHubReceiverUsername) ||
-			gitHubReceiverUsername.equals(gitHubSenderUsername)) {
-
-			return false;
-		}
-
-		Build failedDownstreamBuild = null;
 		List<String> jenkinsJobFailureURLs = new ArrayList<>();
 
 		List<Build> downstreamBuilds = topLevelBuild.getDownstreamBuilds(null);
@@ -372,8 +179,6 @@ public class AutoCloseUtil {
 						String packageName = testResult.getPackageName();
 
 						if (gitSubrepositoryPackageName.equals(packageName)) {
-							failedDownstreamBuild = downstreamBuild;
-
 							StringBuilder sb = new StringBuilder();
 
 							sb.append("<a href=\"");
@@ -390,71 +195,8 @@ public class AutoCloseUtil {
 		}
 
 		if (!jenkinsJobFailureURLs.isEmpty()) {
-			pullRequest.close();
-
-			StringBuilder sb = new StringBuilder();
-
-			sb.append("<h1>The pull request tester is still running.</h1>");
-			sb.append("<p>Please wait until you get the <i><b>final report");
-			sb.append("</b></i> before running 'ci:retest'.</p><p>See this ");
-			sb.append("link to check on the status of your test:</p>");
-
-			sb.append("<ul><li><a href=\"");
-			sb.append(topLevelBuild.getBuildURL());
-			sb.append("\">");
-			sb.append(topLevelBuild.getJobName());
-			sb.append("</a></li></ul>@");
-			sb.append(gitHubSenderUsername);
-			sb.append("</p><hr />");
-
-			sb.append("<h1>However, the pull request was closed.</h1>");
-			sb.append("<p>The pull request was closed due to the following ");
-			sb.append("integration/unit test failures:</p><ul>");
-
-			for (String jenkinsJobFailureURL : jenkinsJobFailureURLs) {
-				sb.append("<li>");
-				sb.append(jenkinsJobFailureURL);
-				sb.append("</li>");
-			};
-
-			sb.append("</ul><p>These test failures are a part of a ");
-			sb.append("'module group'/'subrepository' that was changed in ");
-			sb.append("this pull request.</p>");
-			sb.append("<p auto-close=\"false\"><strong><em>*This pull will ");
-			sb.append("no longer automatically close if this comment is ");
-			sb.append("available. If you believe this is a mistake please ");
-			sb.append("reopen this pull by entering the following command ");
-			sb.append("as a comment.</em></strong></p><pre>ci&#58;reopen");
-			sb.append("</pre><hr /><h3>Critical Failure Details:</h3>");
-
-			try {
-				sb.append(
-					Dom4JUtil.format(
-						failedDownstreamBuild.getGitHubMessageElement(),
-						false));
-			}
-			catch (Exception e) {
-				e.printStackTrace();
-
-				throw e;
-			}
-
-			if (!_autoCloseGitHubCommentMentionUsernames.isEmpty()) {
-				sb.append("<div>cc");
-
-				for (String autoCloseGithubCommentMentionUsername :
-						_autoCloseGitHubCommentMentionUsernames) {
-
-					sb.append(" @");
-					sb.append(autoCloseGithubCommentMentionUsername);
-				}
-
-				sb.append("</div>");
-			}
-
-			pullRequest.addComment(sb.toString());
-
-			return true;
+			return _autoClose(
+				pullRequest, topLevelBuild, jenkinsJobFailureURLs);
 		}
 
 		return false;
@@ -596,6 +338,100 @@ public class AutoCloseUtil {
 		return false;
 	}
 
+	private static boolean _autoClose(
+			PullRequest pullRequest, Build build, List<String> failedBuildURLs)
+		throws IOException {
+
+		if (!_isAutoClosable(pullRequest)) {
+			return false;
+		}
+
+		pullRequest.close();
+
+		StringBuilder sb = new StringBuilder();
+
+		sb.append("<h1>The pull request tester is still running.</h1>");
+		sb.append("<p>Please wait until you get the ");
+		sb.append("<i><b>final report</b></i> before running 'ci:retest'.");
+		sb.append("</p><p>See this link to check on the status of your ");
+		sb.append("test:</p>");
+
+		sb.append("<ul><li><a href=\"");
+		sb.append(build.getBuildURL());
+		sb.append("\">");
+		sb.append(build.getJobName());
+		sb.append("</a></li></ul><p>@");
+		sb.append(pullRequest.getSenderUsername());
+		sb.append("</p><hr />");
+
+		sb.append("<h1>However, the pull request was closed.</h1>");
+
+		sb.append("<p>The pull request was closed because the following ");
+		sb.append("critical builds had failed:</p><ul>");
+
+		for (String failedBuildURL : failedBuildURLs) {
+			sb.append("<li>");
+			sb.append(failedBuildURL);
+			sb.append("</li>");
+		}
+
+		sb.append("</ul><p>For information as to why we ");
+		sb.append("automatically close out certain pull requests see this ");
+		sb.append("<a href=\"https://in.liferay.com/web/global.");
+		sb.append("engineering/wiki/-/wiki/Quality+Assurance+Main/Test");
+		sb.append("+Batch+Automatic+Close+List\">article</a>.</p><p");
+
+		boolean sourceFormatBuild =
+			build instanceof SourceFormatBuild;
+
+		if (sourceFormatBuild) {
+			sb.append("><strong><em>*");
+		}
+		else {
+			sb.append(" auto-close=\"false\"><strong><em>*This pull will ");
+			sb.append("no longer automatically close if this comment is ");
+			sb.append("available. ");
+		}
+
+		sb.append("If you believe this is a mistake please reopen this ");
+		sb.append("pull by entering the following command as a comment.");
+		sb.append("</em></strong><pre>ci&#58;reopen</pre></p>");
+
+		if (sourceFormatBuild) {
+			sb.append("<strong><em>*The reopened pull request may ");
+			sb.append("be automatically closed again if other critical ");
+			sb.append("batches or tests fail.</em></strong>");
+		}
+
+		sb.append("<hr /><h3>Critical Failure Details:</h3>");
+
+		try {
+			sb.append(Dom4JUtil.format(build.getGitHubMessageElement(), false));
+		}
+		catch (Exception e) {
+			e.printStackTrace();
+
+			throw e;
+		}
+
+		if (!_autoCloseGitHubCommentMentionUsernames.isEmpty()) {
+			sb.append("<div>cc");
+
+			for (String autoCloseGitHubCommentMentionUsername :
+					_autoCloseGitHubCommentMentionUsernames) {
+
+				sb.append(" @");
+				sb.append(autoCloseGitHubCommentMentionUsername);
+			}
+
+			sb.append("</div>");
+		}
+
+		pullRequest.addComment(sb.toString());
+
+		return true;
+	}
+
 	private static List<String> _getBuildPropertyAsList(String propertyName) {
 		try {
 			return JenkinsResultsParserUtil.getBuildPropertyAsList(
@@ -605,6 +441,25 @@ public class AutoCloseUtil {
 			throw new RuntimeException(
 				"Unable to get property " + propertyName, ioe);
 		}
+	}
+
+	private static boolean _isAutoClosable(PullRequest pullRequest) {
+		if (pullRequest.isAutoCloseCommentAvailable()) {
+			return false;
+		}
+
+		String gitHubReceiverUsername = pullRequest.getOwnerUsername();
+		String gitHubSenderUsername = pullRequest.getSenderUsername();
+
+		if ((gitHubReceiverUsername == null) ||
+			(gitHubSenderUsername == null) ||
+			!_autoCloseReceiverUsernames.contains(gitHubReceiverUsername) ||
+			gitHubReceiverUsername.equals(gitHubSenderUsername)) {
+
+			return false;
+		}
+
+		return true;
 	}
 
 	private static final List<String> _autoCloseGitHubCommentMentionUsernames =
