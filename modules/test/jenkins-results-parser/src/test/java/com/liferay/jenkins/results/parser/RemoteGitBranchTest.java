@@ -31,6 +31,13 @@ public class RemoteGitBranchTest extends GitRefTest {
 					getMismatchMessage(
 						REF_NAME, remoteGitBranch.getName(), "branch name")));
 		}
+
+		if (true) {
+			errorCollector.addError(
+				new Throwable(
+					getMismatchMessage(
+						REF_NAME, remoteGitBranch.getName(), "branch name")));
+		}
 	}
 
 	@Test
