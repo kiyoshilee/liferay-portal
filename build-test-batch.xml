@@ -605,6 +605,8 @@ mariadb.executable=${mariadb.executable}]]></echo>
 
 	<macrodef name="prepare-release-test-environment">
 		<attribute default="tomcat" name="app.server.type" />
+		<attribute default="true" name="setup.testable.jboss" />
+		<attribute default="true" name="setup.testable.tomcat" />
 		<attribute default="" name="test.build.fix.pack.zip.url" />
 		<attribute default="" name="test.fix.pack.base.url" />
 		<attribute default="" name="test.license.xml.url" />
@@ -1290,6 +1292,8 @@ app.server.type=@{app.server.type}]]></echo>
 						<then>
 							<prepare-release-test-environment
 								app.server.type="${app.server.type}"
+								setup.testable.jboss="@{setup.testable.jboss}"
+								setup.testable.tomcat="@{setup.testable.tomcat}"
 								test.build.fix.pack.zip.url="${test.build.fix.pack.zip.url}"
 								test.fix.pack.base.url="${test.fix.pack.base.url}"
 								test.license.xml.url="${test.license.xml.url}"
@@ -2355,6 +2359,7 @@ module.framework.properties.lpkg.index.validator.enabled=true</echo>
 						<then>
 							<prepare-release-test-environment
 								app.server.type="${app.server.type}"
+								setup.testable.tomcat="@{setup.testable.tomcat}"
 								test.build.fix.pack.zip.url="${test.build.fix.pack.zip.url}"
 								test.fix.pack.base.url="${test.fix.pack.base.url}"
 								test.license.xml.url="${test.license.xml.url}"
