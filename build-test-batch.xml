@@ -2242,6 +2242,7 @@ log.sanitizer.enabled=false</echo>
 								<arg value="-Ddatabase.type=@{database.type}" />
 								<arg value="-Dbuild.exclude.ant.plugin=true" />
 								<arg value="-Dtest.class.group.index=${axis.variable}" />
+								<arg value="--continue" />
 							</gradle-execute>
 
 							<if>
@@ -5095,6 +5096,7 @@ log.sanitizer.enabled=false</echo>
 					<arg if:set="com.liferay.portal.search.solr7.test.unit.started" value="-Dcom.liferay.portal.search.solr7.test.unit.started=${com.liferay.portal.search.solr7.test.unit.started}" />
 					<arg value="-Djunit.code.coverage=${test.batch.code.coverage}" />
 					<arg value="-Dtest.class.group.index=${axis.variable}" />
+					<arg value="--continue" />
 				</gradle-execute>
 			</test-action>
 
