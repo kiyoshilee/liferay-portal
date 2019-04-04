@@ -3778,7 +3778,7 @@ log.sanitizer.enabled=false</echo>
 	</target>
 
 	<target name="jsf-jdk8">
-		<ant antfile="../build-test-batch/jsf.xml" target="jsf-jdk8" />
+		<ant antfile="build-test-batch/jsf.xml" target="jsf-jdk8" />
 	</target>
 
 	<target name="jsp-runtime-compile-jdk8">
