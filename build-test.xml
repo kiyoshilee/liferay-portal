@@ -9864,6 +9864,10 @@ cluster.link.bind.addr["cluster-link-udp"]=127.0.0.1</echo>
 
 							<propertycopy from="${database.type}.executable" name="database.executable" override="true" />
 
+							<echo>#####################</echo>
+							<echo>arg.line: ${arg.line}</echo>
+							<echo>database.executable: ${database.executable}</echo>
+
 							<exec executable="${database.executable}" failonerror="true" input="create.sql">
 								<arg line="${arg.line}" />
 							</exec>
